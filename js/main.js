@@ -65,7 +65,8 @@
 })(jQuery);
 
 class Labels {
-    constructor() {
+    constructor(lang) {
+        console.log('RGA lang', lang);
         this.pageName = 'Condesa Del Rio';
         this.contactUs = "Contactanos";
         this.feelFreeToContact = "Sientete libre de contactarnos";
@@ -106,6 +107,7 @@ function AppViewModel(labels) {
 
     function onLoadViewModel () {
         this.setAvtiveMenu();
+        //window.open('mailto:gonzalezrau690@gmail.com?subject=subject&body=body');
     }
 
     function setAvtiveMenu () {
@@ -129,8 +131,8 @@ function AppViewModel(labels) {
 //     viewModel: AppViewModel(new Labels()),
 //     template: require('fs').readFileSync(__dirname + '/templates/nav-menu.html', 'utf8')
 // });
-
-var model = AppViewModel(new Labels());
+var userLang = navigator.language || navigator.userLanguage; 
+var model = AppViewModel(new Labels(userLang));
 
 ko.components.register('nav-menu', {
     viewModel: model,
@@ -138,9 +140,9 @@ ko.components.register('nav-menu', {
             '<div class="navbar-nav ml-auto p-4" id="navElements">'+
                 '<a href="index.html"   class="nav-item nav-link active"><span data-bind="text: labels.home"></span></a>'+
                 '<a href="about.html"   class="nav-item nav-link"       ><span data-bind="text: labels.about"></span></a>'+
-                '<a href="service.html" class="nav-item nav-link"       ><span data-bind="text: labels.service"></span></a>'+
                 '<a href="menu.html"    class="nav-item nav-link"       ><span data-bind="text: labels.menu"></span></a>'+
-                ' <!-- <div class="nav-item dropdown">'+
+                '<!-- <a href="service.html" class="nav-item nav-link"       ><span data-bind="text: labels.service"></span></a>'+
+                '<div class="nav-item dropdown">'+
                     '<a href="#" class="nav-link dropdown-toggle" data-toggle="dropdown">Pages</a>'+
                     '<div class="dropdown-menu text-capitalize">'+
                         '<a href="reservation.html" class="dropdown-item">Reservation</a>'+
@@ -196,6 +198,87 @@ ko.components.register('footer', {
         '<div class="container-fluid text-center text-white border-top mt-4 py-4 px-sm-3 px-md-5" style="border-color: rgba(256, 256, 256, .1) !important;">'+
             '<p class="mb-2 text-white">Copyright &copy; <a class="font-weight-bold" href="#">Domain</a>. All Rights Reserved.</a></p>'+
             '<!-- <p class="m-0 text-white">Designed by <a class="font-weight-bold" href="https://htmlcodex.com">HTML Codex</a></p> -->'+
+    '</div>'
+});
+
+ko.components.register('about', {
+    viewModel: model,
+    template: ''+
+    '<div class="container">'+
+        '<div class="section-title">'+
+            '<h4 class="text-primary text-uppercase" style="letter-spacing: 5px;"><span data-bind="text: labels.about"></span></h4>'+
+            '<h1 class="display-4">Sirviendo desde 2022</h1>'+
+        '</div>'+
+        '<div class="row">'+
+            '<div class="col-lg-4 py-0 py-lg-5">'+
+                '<h1 class="mb-3">Nuestra Historia</h1>'+
+                '<h5 class="mb-3"></h5>'+
+                '<p>Condesa del Río es un tequila blanco 100% de agave hecho en tequila Jalisco México representante de las bebidas mexicanas en el mundo, símbolo de la tradición ya sea blanco o reposado. Condesa del Río, un sabor suave donde se destaca la selección exclusiva de los agaves maduros en los campos de su jima, es un proceso especial dando resultados de sabor inigualable en su fabricación, un sabor tradicional donde representa la riqueza del suelo mexicano ¨Por eso le llamamos el néctar de los dioses¨.</p>'+
+                '<a href="menu.html" class="btn btn-secondary font-weight-bold py-2 px-4 mt-2">Mas informacion</a>'+
+            '</div>'+
+            '<div class="col-lg-4 py-5 py-lg-0" style="min-height: 700px;">'+
+                '<div class="position-relative h-100">'+
+                    '<img class="position-absolute w-100 h-100" src="img/about.png" style="object-fit: cover;">'+
+                '</div>'+
+            '</div>'+
+            '<div class="col-lg-4 py-0 py-lg-5">'+
+                '<h1 class="mb-3">Nuestra Mision</h1>'+
+               ' <p>Ser la marca numero uno del pais y del continente americano, proporcionando el mejor tequila el mejor sabor al mejor precio.</p>'+
+                '<h5 class="mb-3"><i class="fa fa-check text-primary mr-3"></i>Sabor</h5>'+
+                '<h5 class="mb-3"><i class="fa fa-check text-primary mr-3"></i>Precio</h5>'+
+                '<h5 class="mb-3"><i class="fa fa-check text-primary mr-3"></i>Cultura</h5>'+
+                '<a href="contact.html" class="btn btn-primary font-weight-bold py-2 px-4 mt-2">Mas informacion</a>'+
+            '</div>'+
+        '</div>'+
+   ' </div>'
+});
+
+ko.components.register('menu', {
+    viewModel: model,
+    template: ''+
+    '<div class="container">'+
+        '<div class="section-title">'+
+            '<h4 class="text-primary text-uppercase" style="letter-spacing: 5px;">Productos & Precio</h4>'+
+            '<h1 class="display-4">Precios competitivos</h1>'+
+        '</div>'+
+        '<div class="row">'+
+            '<div class="col-lg-6">'+
+                '<h1 class="mb-5">Botellas </h1>'+
+                '<div class="row align-items-center mb-5">'+
+                   ' <div class="col-4 col-sm-3">'+
+                        '<img class="w-100 rounded-circle mb-3 mb-sm-0" src="img/menu-1.jpg" alt="" style="width: 110px !important; height: 110px;">'+
+                        '<h5 class="menu-price">$680</h5>'+
+                    '</div>'+
+                    '<div class="col-8 col-sm-9">'+
+                        '<h4>Condesa del rio 1L</h4>'+
+                        '<p class="m-0">Tequila de la marca original</p>'+
+                    '</div>'+
+                '</div>'+
+                '<div class="row align-items-center mb-5">'+
+                    '<div class="col-4 col-sm-3">'+
+                        '<img class="w-100 rounded-circle mb-3 mb-sm-0" src="img/menu-2.jpg" alt="" style="width: 110px !important; height: 110px;">'+
+                        '<h5 class="menu-price">$850</h5>'+
+                    '</div>'+
+                    '<div class="col-8 col-sm-9">'+
+                        '<h4>Pispireto</h4>'+
+                        '<p class="m-0">Tequila pispireto</p>'+
+                    '</div>'+
+                '</div>'+
+            '</div>'+
+            '<div class="col-lg-6">'+
+                '<h1 class="mb-5">Por Mayoreo</h1>'+
+                '<div class="row align-items-center mb-5">'+
+                    '<div class="col-4 col-sm-3">'+
+                        '<img class="w-100 rounded-circle mb-3 mb-sm-0" src="img/menu-1.jpg" alt="" style="width: 110px !important; height: 110px;">'+
+                        '<h5 class="menu-price">$?</h5>'+
+                    '</div>'+
+                    '<div class="col-8 col-sm-9">'+
+                        '<h4>Condesa del rio 1L (x botellas)</h4>'+
+                        '<p class="m-0">Contacta me para saber precios al mayoreo <a href="tel:333-417-5555"><span data-bind="text: labels.phone"></span></a></p>'+
+                    '</div>'+
+                '</div>'+
+            '</div>'+
+        '</div>'+
     '</div>'
 });
 
