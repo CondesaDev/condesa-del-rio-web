@@ -64,6 +64,7 @@
     });
 })(jQuery);
 
+
 class Labels {
     constructor(lang) {
         console.log('RGA lang', lang);

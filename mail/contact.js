@@ -10,11 +10,16 @@ $(function () {
             var email = $("input#email").val();
             var subject = $("input#subject").val();
             var message = $("textarea#message").val();
-
-            $this = $("#sendMessageButton");
-            $this.prop("disabled", true);
-
-            $.ajax({
+            var sendObj = {
+                Host : "smtp.elasticemail.com",
+                Username : "delriocondeza@gmail.com",
+                Password : "4AA5615E11008FA3E98B97341C857BF09C86",
+                From: 'gonzalezraul690@gmail.com',
+                To : 'delriocondeza@gmail.com',
+                Subject : subject + ' <' + email + '>',
+                Body : 'Nuevo mensaje de ' + name + ' Mensaje: ' + message,
+            };
+            var ajaxObj = {
                 url: "contact.php",
                 type: "POST",
                 data: {
@@ -47,7 +52,26 @@ $(function () {
                         $this.prop("disabled", false);
                     }, 1000);
                 }
-            });
+            };
+            var success = (message) => {
+                console.log(message);
+                ajaxObj.success();
+                ajaxObj.complete();
+            };
+            var contact = {
+                from_email: email,
+                from_name: name,
+                message: message
+            };
+
+            $this = $("#sendMessageButton");
+            $this.prop("disabled", true);
+
+            Email.send(sendObj).then(success);
+
+            //emailjs.init("uw1pl-ZU1a_9Q_xWl");
+            //emailjs.send("service_gdcojii", "template_a1sd0cn", contact).then(success);
+            //$.ajax(ajaxObj);
         },
         filter: function () {
             return $(this).is(":visible");
