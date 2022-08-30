@@ -64,6 +64,47 @@
     });
 })(jQuery);
 
+function googleTranslateElementInit() {
+    new google.translate.TranslateElement({pageLanguage: 'es', includedLanguages: 'en,es', layout: google.translate.TranslateElement.InlineLayout.HORIZONTAL}, 'google_translate_element');
+
+    $("body").on("change", "#google_translate_element select", function (e) {
+        var val = $(this).find(":selected").val();
+        console.log(e);
+        console.log($(this).find(":selected").text());
+        console.log(val);
+
+        if (val) {
+            localStorage.setItem('leng', val);
+        }
+    });
+    
+    function changeLangToSV(){
+        const leng = localStorage.getItem('leng');
+        console.log('default leng', leng);
+        
+        let ele = document.querySelector("#google_translate_element select");
+        let options = document.querySelectorAll("#google_translate_element select option");
+        console.log(ele, options);
+        options.forEach((option) => {
+            console.log(option.value, leng, option.value === leng);
+            if (option.value === leng) {
+                ele.selectedIndex = option.index;
+                console.log(ele);
+                ele.dispatchEvent(new Event("change"));
+            }
+        });
+    }
+
+    setTimeout(function(){ changeLangToSV(); }, 2000);
+
+    // var size = document.querySelector("#google_translate_element select").length;
+    // while (!size) {
+    //     changeLangToSV();
+    //     size = document.querySelector("#google_translate_element select").length;
+    //     console.log(size);
+    // }
+    
+}
 
 class Labels {
     constructor(lang) {
