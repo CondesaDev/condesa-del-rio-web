@@ -274,37 +274,43 @@ ko.components.register('menu', {
         '<div class="row">'+
             '<div class="col-lg-6">'+
                 '<h1 class="mb-5">Botellas </h1>'+
-                '<div class="row align-items-center mb-5">'+
+                '<div class="row align-items-center mb-5 data-card">'+
                    ' <div class="col-4 col-sm-3">'+
                         '<img class="w-100 rounded-circle mb-3 mb-sm-0" src="img/menu-1.jpg" alt="" style="width: 110px !important; height: 110px;">'+
                         '<h5 class="menu-price">$680</h5>'+
                     '</div>'+
                     '<div class="col-8 col-sm-9">'+
-                        '<h4>Condesa del rio 1L</h4>'+
-                        '<p class="m-0">Tequila de la marca original</p>'+
+                        '<div class="info-card">'+
+                            '<h4>Condesa del rio 1L</h4>'+
+                            '<p class="m-0">Tequila de la marca original</p>'+
+                        '</div>'+
                     '</div>'+
                 '</div>'+
-                '<div class="row align-items-center mb-5">'+
+                '<div class="row align-items-center mb-5 data-card">'+
                     '<div class="col-4 col-sm-3">'+
                         '<img class="w-100 rounded-circle mb-3 mb-sm-0" src="img/menu-2.jpg" alt="" style="width: 110px !important; height: 110px;">'+
                         '<h5 class="menu-price">$850</h5>'+
                     '</div>'+
                     '<div class="col-8 col-sm-9">'+
-                        '<h4>Pispireto</h4>'+
-                        '<p class="m-0">Tequila pispireto</p>'+
+                        '<div class="info-card">'+
+                            '<h4>Pispireto</h4>'+
+                            '<p class="m-0">Tequila pispireto</p>'+
+                        '</div>'+
                     '</div>'+
                 '</div>'+
             '</div>'+
             '<div class="col-lg-6">'+
                 '<h1 class="mb-5">Por Mayoreo</h1>'+
-                '<div class="row align-items-center mb-5">'+
+                '<div class="row align-items-center mb-5 data-card">'+
                     '<div class="col-4 col-sm-3">'+
                         '<img class="w-100 rounded-circle mb-3 mb-sm-0" src="img/menu-1.jpg" alt="" style="width: 110px !important; height: 110px;">'+
                         '<h5 class="menu-price">$?</h5>'+
                     '</div>'+
                     '<div class="col-8 col-sm-9">'+
-                        '<h4>Condesa del rio 1L (x botellas)</h4>'+
-                        '<p class="m-0">Contacta me para saber precios al mayoreo <a href="tel:333-417-5555"><span data-bind="text: labels.phone"></span></a></p>'+
+                        '<div class="info-card">'+
+                            '<h4>Condesa del rio 1L (x botellas)</h4>'+
+                            '<p class="m-0">Contacta me para saber precios al mayoreo <a href="tel:333-417-5555"><span data-bind="text: labels.phone"></span></a></p>'+
+                        '</div>'+
                     '</div>'+
                 '</div>'+
             '</div>'+
