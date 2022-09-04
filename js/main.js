@@ -1,5 +1,5 @@
 (function ($) {
-    "use strict";
+    'use strict';
 
     // Dropdown on mouse hover
     $(document).ready(function () {
@@ -40,7 +40,7 @@
     });
 
     // Testimonials carousel
-    $(".testimonial-carousel").owlCarousel({
+    $('.testimonial-carousel').owlCarousel({
         autoplay: true,
         smartSpeed: 1500,
         margin: 30,
@@ -67,11 +67,8 @@
 function googleTranslateElementInit() {
     new google.translate.TranslateElement({pageLanguage: 'es', includedLanguages: 'en,es', layout: google.translate.TranslateElement.InlineLayout.HORIZONTAL}, 'google_translate_element');
 
-    $("body").on("change", "#google_translate_element select", function (e) {
-        var val = $(this).find(":selected").val();
-        console.log(e);
-        console.log($(this).find(":selected").text());
-        console.log(val);
+    $('body').on('change', '#google_translate_element select', function (e) {
+        var val = $(this).find(':selected').val();
 
         if (val) {
             localStorage.setItem('leng', val);
@@ -80,40 +77,29 @@ function googleTranslateElementInit() {
     
     function changeLangToSV(){
         const leng = localStorage.getItem('leng');
-        console.log('default leng', leng);
-        
-        let ele = document.querySelector("#google_translate_element select");
-        let options = document.querySelectorAll("#google_translate_element select option");
-        console.log(ele, options);
+
+        let ele = document.querySelector('#google_translate_element select');
+        let options = document.querySelectorAll('#google_translate_element select option');
+
         options.forEach((option) => {
-            console.log(option.value, leng, option.value === leng);
+
             if (option.value === leng) {
                 ele.selectedIndex = option.index;
-                console.log(ele);
-                ele.dispatchEvent(new Event("change"));
+                ele.dispatchEvent(new Event('change'));
             }
         });
     }
 
-    setTimeout(function(){ changeLangToSV(); }, 2000);
-
-    // var size = document.querySelector("#google_translate_element select").length;
-    // while (!size) {
-    //     changeLangToSV();
-    //     size = document.querySelector("#google_translate_element select").length;
-    //     console.log(size);
-    // }
-    
+    setTimeout(function(){ changeLangToSV(); }, 3000);
 }
 
 class Labels {
     constructor(lang) {
-        console.log('RGA lang', lang);
         this.pageName = 'Condesa Del Rio';
-        this.contactUs = "Contactanos";
-        this.feelFreeToContact = "Sientete libre de contactarnos";
-        this.addressHeader = "Direccion";
-        this.address = "Tequila, Jalisco, Mexico";
+        this.contactUs = 'Contactanos';
+        this.feelFreeToContact = 'Sientete libre de contactarnos';
+        this.addressHeader = 'Direccion';
+        this.address = 'Tequila, Jalisco, Mexico';
         this.phoneHeader= 'Telefono';
         this.phone = '+52 333 417 5555';
         this.emailHeader = 'Email';
@@ -140,7 +126,6 @@ class Labels {
 }
 
 function AppViewModel(labels) {
-    console.log(labels);
     this.labels = labels;
     this.setAvtiveMenu = setAvtiveMenu;
     this.onLoadViewModel = onLoadViewModel;
@@ -149,20 +134,23 @@ function AppViewModel(labels) {
 
     function onLoadViewModel () {
         this.setAvtiveMenu();
-        //window.open('mailto:gonzalezrau690@gmail.com?subject=subject&body=body');
     }
 
     function setAvtiveMenu () {
         $(document).ready(function () {
             var location = window.location.toString().split('/').at(-1);
-            var navElemet = $("#navElements" );
+            if (!location) {
+                location = 'index.html';
+            }
+
+            var navElemet = $('#navElements' );
             var aElemets = navElemet.children();
             
-            aElemets.removeClass("active");
+            aElemets.removeClass('active');
 
-            var currentTab = navElemet.find($("a[href='"+location+"']"));
+            var currentTab = navElemet.find($(`a[href="${location}"]`));
 
-            currentTab.addClass("active");
+            currentTab.addClass('active');
 
         });
         return true;
