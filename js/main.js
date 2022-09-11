@@ -197,8 +197,9 @@ ko.components.register('footer', {
                 '<h4 class="text-white text-uppercase mb-4" style="letter-spacing: 3px;">Siguenos</h4>'+
                 '<p>Ahora nos puedes seguir en las sigueinetes redes sociales</p>'+
                 '<div class="d-flex justify-content-start">'+
-                    '<a class="btn btn-lg btn-outline-light btn-lg-square mr-2" href="https://www.facebook.com/Condesa-del-rio-110107168450655"><i class="fab fa-facebook-f"></i></a>'+
-                    '<a class="btn btn-lg btn-outline-light btn-lg-square" href="#"><i class="fab fa-instagram"></i></a>'+
+                    '<a class="btn btn-lg btn-outline-light btn-lg-square mr-2" target="_blank" href="https://www.facebook.com/Condesa-del-rio-110107168450655"><i class="fab fa-facebook-f"></i></a>'+
+                    '<a class="btn btn-lg btn-outline-light btn-lg-square mr-2" target="_blank" href="#"><i class="fab fa-instagram"></i></a>'+
+                    '<a class="btn btn-lg btn-outline-light btn-lg-square" target="_blank" href="https://www.tiktok.com/@elizabethrio855?_t=8VabXtVznYU&_r=1"><i class="fab fa-tiktok"></i></a>'+
                     '<!-- <a class="btn btn-lg btn-outline-light btn-lg-square mr-2" href="#"><i class="fab fa-twitter"></i></a>'+
                     '<a class="btn btn-lg btn-outline-light btn-lg-square mr-2" href="#"><i class="fab fa-linkedin-in"></i></a> -->'+
                 '</div>'+
@@ -237,7 +238,7 @@ ko.components.register('about', {
     '<div class="container">'+
         '<div class="section-title">'+
             '<h4 class="text-primary text-uppercase" style="letter-spacing: 5px;"><span data-bind="text: labels.about"></span></h4>'+
-            '<h1 class="display-4">Sirviendo desde 2022</h1>'+
+            '<h1 class="display-4">Conquistando paladares</h1>'+
         '</div>'+
         '<div class="row">'+
             '<div class="col-lg-4 py-0 py-lg-5">'+
@@ -253,7 +254,7 @@ ko.components.register('about', {
             '</div>'+
             '<div class="col-lg-4 py-0 py-lg-5">'+
                 '<h1 class="mb-3">Nuestra Mision</h1>'+
-               ' <p>Ser la marca numero uno del pais y del continente americano, proporcionando el mejor tequila el mejor sabor al mejor precio.</p>'+
+               ' <p>No somos como todos pero somos un tequila con personalidad con carácter con unas notas elegantes que te lleva al paladar a disfrutár todas las tonalidades que se pueden diescubrir que se convierta en arte en el paladar creamos el arte en tequila.</p>'+
                 '<h5 class="mb-3"><i class="fa fa-check text-primary mr-3"></i>Sabor</h5>'+
                 '<h5 class="mb-3"><i class="fa fa-check text-primary mr-3"></i>Precio</h5>'+
                 '<h5 class="mb-3"><i class="fa fa-check text-primary mr-3"></i>Cultura</h5>'+
@@ -269,13 +270,13 @@ ko.components.register('menu', {
     '<div class="container">'+
         '<div class="section-title">'+
             '<h4 class="text-primary text-uppercase" style="letter-spacing: 5px;">Productos & Precio</h4>'+
-            '<h1 class="display-4">Precios competitivos</h1>'+
+            '<h1 class="display-4">Con excelentes precios</h1>'+
         '</div>'+
         '<div class="row">'+
-            '<div class="col-lg-6">'+
+            '<div class="col-lg-6 overflow-hidden">'+
                 '<h1 class="mb-5">Botellas </h1>'+
                 '<div class="row align-items-center mb-5 data-card">'+
-                   ' <div class="col-4 col-sm-3">'+
+                   ' <div class="col-4 col-sm-3 index9">'+
                         '<img class="w-100 rounded-circle mb-3 mb-sm-0" src="img/menu-1.jpg" alt="" style="width: 110px !important; height: 110px;">'+
                         '<h5 class="menu-price">$680</h5>'+
                     '</div>'+
@@ -287,7 +288,7 @@ ko.components.register('menu', {
                     '</div>'+
                 '</div>'+
                 '<div class="row align-items-center mb-5 data-card">'+
-                    '<div class="col-4 col-sm-3">'+
+                    '<div class="col-4 col-sm-3 index9">'+
                         '<img class="w-100 rounded-circle mb-3 mb-sm-0" src="img/menu-2.jpg" alt="" style="width: 110px !important; height: 110px;">'+
                         '<h5 class="menu-price">$850</h5>'+
                     '</div>'+
@@ -299,15 +300,15 @@ ko.components.register('menu', {
                     '</div>'+
                 '</div>'+
             '</div>'+
-            '<div class="col-lg-6">'+
+            '<div class="col-lg-6 overflow-hidden">'+
                 '<h1 class="mb-5">Por Mayoreo</h1>'+
                 '<div class="row align-items-center mb-5 data-card">'+
-                    '<div class="col-4 col-sm-3">'+
+                    '<div class="col-4 col-sm-3 index9">'+
                         '<img class="w-100 rounded-circle mb-3 mb-sm-0" src="img/menu-1.jpg" alt="" style="width: 110px !important; height: 110px;">'+
                         '<h5 class="menu-price">$?</h5>'+
                     '</div>'+
                     '<div class="col-8 col-sm-9">'+
-                        '<div class="info-card">'+
+                        '<div class="info-card" style="top: -3rem">'+
                             '<h4>Condesa del rio 1L (x botellas)</h4>'+
                             '<p class="m-0">Contacta me para saber precios al mayoreo <a href="tel:333-417-5555"><span data-bind="text: labels.phone"></span></a></p>'+
                         '</div>'+

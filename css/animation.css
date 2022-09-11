@@ -1,7 +1,10 @@
 
+.overflow-hidden {
+     overflow: hidden;
+}
+
 .data-card {
     position: relative;
-    overflow: hidden;
 }
 
 .info-card {
@@ -27,7 +30,7 @@
     -ms-filter: "progid: DXImageTransform.Microsoft.Alpha(Opacity=100)";
     filter: alpha(opacity=100);
     opacity: 1;
-    left: 0%;
+    left: 5%;
     -webkit-transition-delay: 0s;
     -moz-transition-delay: 0s;
     -o-transition-delay: 0s;
@@ -37,6 +40,10 @@
     -moz-animation: bounceX 0.9s linear;
     -ms-animation: bounceX 0.9s linear;
     animation: bounceX 0.9s linear; 
+}
+
+.index9 {
+     z-index: 1;
 }
 
 @keyframes bounceX {
