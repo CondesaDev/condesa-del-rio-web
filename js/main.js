@@ -16,17 +16,17 @@
                 $('.navbar .dropdown').off('mouseover').off('mouseout');
             }
 
-            var eventhandler = function(e) {
-                e.preventDefault();      
-                //e.stopPropagation();
-            }
-
             if ($(window).width() <= 768) {
-               $("a.hover-button").bind('click', eventhandler);
-               //$("a.hover-button").prop('disabled', true);
+                //$("#whatsAppImg").removeClass("hover-image");
+                //$("#whatsAppImg").css("opacity", "1");
+                //$("#whatsAppImg").addClass("hover-image");
+                //$("a.hover-button").bind('click', eventhandler);
+                //$("a.hover-button").prop('disabled', true);
             } else {
+                //$("#whatsAppImg").addClass("hover-image");
+                //$("#whatsAppImg").css("opacity", "0");
                 //$("a.hover-button").prop('disabled', false);
-               $("a.hover-button").unbind('click',eventhandler);
+               //$("a.hover-button").unbind('click',eventhandler);
             }
         }
         toggleNavbarMethod();
