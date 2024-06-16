@@ -19,12 +19,12 @@
             var eventhandler = function(e) {
                 e.preventDefault();      
                 //e.stopPropagation();
-             }
+            }
 
             if ($(window).width() <= 768) {
                // $("a.hover-button").bind('click', eventhandler);
                //$("a.hover-button").prop('disabled', true);
-            }else {
+            } else {
                 //$("a.hover-button").prop('disabled', false);
                // $("a.hover-button").unbind('click',eventhandler);
             }
