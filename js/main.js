@@ -147,12 +147,17 @@ function AppViewModel(labels) {
     this.onLoadViewModel = onLoadViewModel;
     this.readDocuments = readDocuments;
     this.insertComment = insertComment;
+    this.hideError = hideError;
+    this.photoChanged = photoChanged;
     this.token;
-    this.API_KEY = 'aGRN1NCy3khZzURqfzrlCTmTsIfCt83VyZutV8nNGANiE0Mg5Xkzf3qVPCppTwns'; // Reemplaza con tu clave de API de Data API
+    this.API_KEY = 'aGRN1NCy3khZzURqfzrlCTmTsIfCt83VyZutV8nNGANiE0Mg5Xkzf3qVPCppTwns';
+    this.LOGIN_URL = 'https://ap-southeast-1.aws.services.cloud.mongodb.com/api/client/v2.0/app/data-agbvuip/auth/providers/local-userpass/login';
     this.BASE_URL = 'https://ap-southeast-1.aws.data.mongodb-api.com/app/data-agbvuip/endpoint/data/v1/action';
     this.DATABASE = 'development';
     this.COLLECTION = 'reviews';
     this.DATASOURSE = 'condesa-dev';
+    this.USER = 'rulorules99';
+    this.PASS = 'cloud192';
 
     this.onLoadViewModel();
 
@@ -163,52 +168,91 @@ function AppViewModel(labels) {
 
     function insertComment () {
         const username = document.getElementById('username').value;
-        const rating = document.querySelector('input[name="rating"]:checked').value;
+        const rating = document.querySelector('input[name="rating"]:checked');
         const comment = document.getElementById('comment').value;
         const date = new Date().toISOString();
         const photoInput = document.getElementById('photo');
         const photoFile = photoInput.files[0];
+
+        let hasError = false;
+
+        if (!username) {
+            showError('usernameError');
+            hasError = true;
+        } else {
+            hideError('usernameError');
+        }
+    
+        if (!comment) {
+            showError('commentError');
+            hasError = true;
+        } else {
+            hideError('commentError');
+        }
+    
+        if (!rating) {
+            showError('ratingError');
+            hasError = true;
+        }else {
+            hideError('ratingError');
+        }
+
+        if (hasError) {
+            return;
+        }
     
         let photoBase64 = null;
         if (photoFile) {
             const reader = new FileReader();
             reader.onloadend = () => {
                 photoBase64 = reader.result.split(',')[1];
-                submitReview({ rating, comment, date, username, photoBase64 });
+                submitReview({  rating: parseInt(rating.value), comment, date, username, photoBase64 });
             };
             reader.readAsDataURL(photoFile);
         } else {
-            submitReview({ rating, comment, date, username });
+            submitReview({ rating: parseInt(rating.value), comment, date, username });
         }
+    }
+
+    function showError(elementId) {
+        const errorElement = document.getElementById(elementId);
+        errorElement.style.display = 'block';
+        setTimeout(() => {
+            errorElement.style.display = 'none';
+        }, 10000); // Desaparece después de 10 segundos
+    }
+    
+    function hideError(elementId) {
+        document.getElementById(elementId).style.display = 'none';
     }
 
     function submitReview (review) {
         $.ajax({
             type: "POST",
-            url: 'https://ap-southeast-1.aws.data.mongodb-api.com/app/data-agbvuip/endpoint/data/v1/action/insertOne',
+            url: `${this.BASE_URL}/insertOne`,
             headers: {
                 'Content-Type': 'application/json',
                 "Authorization": `Bearer ${this.token}`
             },
             data: JSON.stringify(
             {
-                "collection":"reviews",
-                "database":"development",
-                "dataSource":"condesa-dev",
+                "collection": this.COLLECTION,
+                "database": this.DATABASE,
+                "dataSource": this.DATASOURSE,
                 "document": {
-                    average: parseInt(review.rating),
+                    average: review.rating,
                     reviewComment: review.comment,
                     photo: review.photoBase64,
                     username: review.username,
                     createdAt: { "$date": review.date }
                 }
             }),
-            success: function (data) {    
-                console.log('Documentos encontrados:', data);
-                document.getElementById('review').innerText = JSON.stringify(data);
+            success: (data) => {    
+                console.log('Documentos insertados:', data);
+                this.readDocuments();
             },
             error: function (data) {
-                console.log('Errores encontrados:', data);
+                alert('Errores encontrados: ' + data);
             }
         });
     }
@@ -228,39 +272,37 @@ function AppViewModel(labels) {
             var currentTab = navElemet.find($(`a[href="${location}"]`));
 
             currentTab.addClass('active');
-
-
-            document.getElementById('photo').addEventListener('change', function() {
-                const photoPreview = document.getElementById('photoPreview');
-                const photoFile = this.files[0];
-                
-                if (photoFile) {
-                    const reader = new FileReader();
-                    reader.onloadend = () => {
-                        photoPreview.src = reader.result;
-                        photoPreview.style.display = 'block';
-                    };
-                    reader.readAsDataURL(photoFile);
-                } else {
-                    photoPreview.src = '';
-                    photoPreview.style.display = 'none';
-                }
-            });
         });
         return true;
+    }
+
+    function photoChanged (data, e) {
+        const photoPreview = document.getElementById('photoPreview');
+        const photoFile = e.target.files[0];
+        
+        if (photoFile) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                photoPreview.src = reader.result;
+                photoPreview.style.display = 'block';
+            };
+            reader.readAsDataURL(photoFile);
+        } else {
+            photoPreview.src = '';
+            photoPreview.style.display = 'none';
+        }
     }
 
     function readDocuments() {
         $.ajax({
             type: "POST",
-            url: 'https://ap-southeast-1.aws.services.cloud.mongodb.com/api/client/v2.0/app/data-agbvuip/auth/providers/local-userpass/login',
-            //dataType: 'jsonp',
+            url: this.LOGIN_URL,
             headers: {
                 "Content-Type": "application/json"
             },
             data: JSON.stringify({
-                "username": "rulorules99",
-                "password": "cloud192"
+                "username": this.USER,
+                "password": this.PASS
             }),
             success: (data) => {
 
@@ -268,25 +310,19 @@ function AppViewModel(labels) {
                 this.token = data.access_token;
                 $.ajax({
                     type: "POST",
-                    url: 'https://ap-southeast-1.aws.data.mongodb-api.com/app/data-agbvuip/endpoint/data/v1/action/find',
-                    //dataType: 'jsonp',
+                    url: `${this.BASE_URL}/find`,
                     headers: {
                         'Content-Type': 'application/json',
-                        //'Access-Control-Request-Headers': '*',
                         "Authorization": `Bearer ${this.token}`
                     },
                     data: JSON.stringify({
-                        "collection":"reviews",
-                        "database":"development",
-                        "dataSource":"condesa-dev"//,
-                        //"projection": {"_id": 1}
+                        "collection": this.COLLECTION,
+                        "database": this.DATABASE,
+                        "dataSource": this.DATASOURSE
                     }),
-                    success: function (data) {    
+                    success: function (data) {
                         console.log('Documentos encontrados:', data);
-                        //document.getElementById('review').innerText = JSON.stringify(data);
                         const reviews = data.documents.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-
-
                         const resultsDiv = document.getElementById('results');
                         resultsDiv.innerHTML = ''; // Limpiar resultados previos
                         
@@ -294,19 +330,29 @@ function AppViewModel(labels) {
                             const reviewDiv = document.createElement('div');
                             reviewDiv.classList.add('review');
                             
+                            const infoDiv = document.createElement('div');
+                            infoDiv.classList.add('info');
+                            
+                            const dateDiv = document.createElement('div');
+                            dateDiv.classList.add('date');
+                            dateDiv.innerText = new Date(review.createdAt).toLocaleString();
+                            
                             const ratingDiv = document.createElement('div');
                             ratingDiv.classList.add('rating');
                             ratingDiv.innerHTML = '★'.repeat(review.average) + '☆'.repeat(5 - review.average);
                             
+                            infoDiv.appendChild(dateDiv);
+                            infoDiv.appendChild(ratingDiv);
+                            
                             const commentDiv = document.createElement('div');
                             commentDiv.classList.add('comment');
                             commentDiv.innerText = review.reviewComment;
-
+                            
                             const usernameDiv = document.createElement('div');
                             usernameDiv.classList.add('username');
                             usernameDiv.innerText = `Por: ${review.username}`;
                             
-                            reviewDiv.appendChild(ratingDiv);
+                            reviewDiv.appendChild(infoDiv);
                             reviewDiv.appendChild(usernameDiv);
                             reviewDiv.appendChild(commentDiv);
 
@@ -318,17 +364,18 @@ function AppViewModel(labels) {
                                 photoDiv.appendChild(img);
                                 reviewDiv.appendChild(photoDiv);
                             }
-                            
+        
                             resultsDiv.appendChild(reviewDiv);
+
                         });
                     },
                     error: function (data) {
-                        console.log('Errores encontrados:', data);
+                        alert('Errores encontrados: ' + data);
                     }
                 });
             },
             error: function (data) {
-                console.log('Errores encontrados:', data);
+                alert('Errores encontrados: ' + data);
             }
         });
     }

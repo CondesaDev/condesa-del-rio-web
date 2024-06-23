@@ -79,11 +79,16 @@
             border: 1px solid #ccc;
             border-radius: 5px;
             resize: vertical;
-            margin-bottom: 20px;
+            margin-bottom: 5px;
             font-size: 1em;
         }
         input[type="file"] {
             display: none;
+        }
+        .photo-upload {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
         }
         label[for="photo"] {
             display: inline-block;
@@ -94,6 +99,7 @@
             border-radius: 5px;
             cursor: pointer;
             transition: background-color 0.3s;
+            margin-right: 10px;
         }
         label[for="photo"]:hover {
             background-color: #b38e2f;
@@ -112,6 +118,24 @@
         button:hover {
             background-color: #b38e2f;
         }
+        .error {
+            color: #f44336;
+            background-color: #fdecea;
+            border: 1px solid #f44336;
+            border-radius: 5px;
+            padding: 5px;
+            font-size: 0.9em;
+            margin-bottom: 10px;
+            position: relative;
+        }
+        .error .close {
+            position: absolute;
+            top: 5px;
+            right: 10px;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.2em;
+        }
         #results {
             max-width: 600px;
             margin: 20px auto;
@@ -129,6 +153,16 @@
         }
         .review:last-child {
             border-bottom: none;
+        }
+        .review .info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .review .info .date {
+            color: #d4af37;
+            font-size: 0.9em;
         }
         .review .rating {
             color: #d4af37;
@@ -201,25 +235,35 @@
                 <input type="radio" name="rating" id="star2" value="2"><label for="star2">&#9733;</label>
                 <input type="radio" name="rating" id="star1" value="1"><label for="star1">&#9733;</label>
             </div>
+            <div id="ratingError" class="error" style="display:none;">
+                Por favor, selecciona una calificación.
+                <span class="close" data-bind="click: hideError('ratingError')">&times;</span>
+            </div>
             <div>
                 <label for="username">Nombre de usuario:</label>
                 <input type="text" id="username" name="username" required>
+                <div id="usernameError" class="error" style="display:none;">
+                    Nombre de usuario es requerido
+                    <span class="close" data-bind="click: hideError('usernameError')">&times;</span>
+                </div>
             </div>
             <div>
                 <label for="comment">Comentario:</label>
                 <textarea id="comment" name="comment" rows="4" cols="50" required></textarea>
+                <div id="commentError" class="error" style="display:none;">
+                    Comentario es requerido
+                    <span class="close" data-bind="click: hideError('commentError')">&times;</span>
+                </div>
             </div>
-            <div>
+            <div class="photo-upload">
                 <label for="photo">Subir Foto</label>
-                <input type="file" id="photo" name="photo" accept="image/*">
+                <input type="file" id="photo" name="photo" accept="image/*" data-bind="event:{ change: photoChanged}">
                 <img id="photoPreview" src="" alt="Previsualización de la foto">
             </div>
-            <button type="submit"  data-bind="click: insertComment">Enviar Reseña</button>
+            <button type="submit" data-bind="click: insertComment">Enviar Reseña</button>
         </form>
         
-        <div id="results">
-            Resultados:
-        </div>
+        <div id="results"> Cargando ....</div>
         
     </div>
     <!-- Contact End -->
