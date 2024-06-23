@@ -137,6 +137,7 @@ class Labels {
         this.service = 'Servicio';
         this.menu = 'Productos';
         this.contact = 'Contacto';
+        this.comments = 'Comentarios';
     }
 }
 
@@ -144,11 +145,72 @@ function AppViewModel(labels) {
     this.labels = labels;
     this.setAvtiveMenu = setAvtiveMenu;
     this.onLoadViewModel = onLoadViewModel;
+    this.readDocuments = readDocuments;
+    this.insertComment = insertComment;
+    this.token;
+    this.API_KEY = 'aGRN1NCy3khZzURqfzrlCTmTsIfCt83VyZutV8nNGANiE0Mg5Xkzf3qVPCppTwns'; // Reemplaza con tu clave de API de Data API
+    this.BASE_URL = 'https://ap-southeast-1.aws.data.mongodb-api.com/app/data-agbvuip/endpoint/data/v1/action';
+    this.DATABASE = 'development';
+    this.COLLECTION = 'reviews';
+    this.DATASOURSE = 'condesa-dev';
 
     this.onLoadViewModel();
 
     function onLoadViewModel () {
         this.setAvtiveMenu();
+        this.readDocuments();
+    }
+
+    function insertComment () {
+        const username = document.getElementById('username').value;
+        const rating = document.querySelector('input[name="rating"]:checked').value;
+        const comment = document.getElementById('comment').value;
+        const date = new Date().toISOString();
+        const photoInput = document.getElementById('photo');
+        const photoFile = photoInput.files[0];
+    
+        let photoBase64 = null;
+        if (photoFile) {
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                photoBase64 = reader.result.split(',')[1];
+                submitReview({ rating, comment, date, username, photoBase64 });
+            };
+            reader.readAsDataURL(photoFile);
+        } else {
+            submitReview({ rating, comment, date, username });
+        }
+    }
+
+    function submitReview (review) {
+        $.ajax({
+            type: "POST",
+            url: 'https://ap-southeast-1.aws.data.mongodb-api.com/app/data-agbvuip/endpoint/data/v1/action/insertOne',
+            headers: {
+                'Content-Type': 'application/json',
+                "Authorization": `Bearer ${this.token}`
+            },
+            data: JSON.stringify(
+            {
+                "collection":"reviews",
+                "database":"development",
+                "dataSource":"condesa-dev",
+                "document": {
+                    average: parseInt(review.rating),
+                    reviewComment: review.comment,
+                    photo: review.photoBase64,
+                    username: review.username,
+                    createdAt: { "$date": review.date }
+                }
+            }),
+            success: function (data) {    
+                console.log('Documentos encontrados:', data);
+                document.getElementById('review').innerText = JSON.stringify(data);
+            },
+            error: function (data) {
+                console.log('Errores encontrados:', data);
+            }
+        });
     }
 
     function setAvtiveMenu () {
@@ -167,8 +229,108 @@ function AppViewModel(labels) {
 
             currentTab.addClass('active');
 
+
+            document.getElementById('photo').addEventListener('change', function() {
+                const photoPreview = document.getElementById('photoPreview');
+                const photoFile = this.files[0];
+                
+                if (photoFile) {
+                    const reader = new FileReader();
+                    reader.onloadend = () => {
+                        photoPreview.src = reader.result;
+                        photoPreview.style.display = 'block';
+                    };
+                    reader.readAsDataURL(photoFile);
+                } else {
+                    photoPreview.src = '';
+                    photoPreview.style.display = 'none';
+                }
+            });
         });
         return true;
+    }
+
+    function readDocuments() {
+        $.ajax({
+            type: "POST",
+            url: 'https://ap-southeast-1.aws.services.cloud.mongodb.com/api/client/v2.0/app/data-agbvuip/auth/providers/local-userpass/login',
+            //dataType: 'jsonp',
+            headers: {
+                "Content-Type": "application/json"
+            },
+            data: JSON.stringify({
+                "username": "rulorules99",
+                "password": "cloud192"
+            }),
+            success: (data) => {
+
+                console.log('access_token:', data);
+                this.token = data.access_token;
+                $.ajax({
+                    type: "POST",
+                    url: 'https://ap-southeast-1.aws.data.mongodb-api.com/app/data-agbvuip/endpoint/data/v1/action/find',
+                    //dataType: 'jsonp',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        //'Access-Control-Request-Headers': '*',
+                        "Authorization": `Bearer ${this.token}`
+                    },
+                    data: JSON.stringify({
+                        "collection":"reviews",
+                        "database":"development",
+                        "dataSource":"condesa-dev"//,
+                        //"projection": {"_id": 1}
+                    }),
+                    success: function (data) {    
+                        console.log('Documentos encontrados:', data);
+                        //document.getElementById('review').innerText = JSON.stringify(data);
+                        const reviews = data.documents.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+
+                        const resultsDiv = document.getElementById('results');
+                        resultsDiv.innerHTML = ''; // Limpiar resultados previos
+                        
+                        reviews.forEach(review => {
+                            const reviewDiv = document.createElement('div');
+                            reviewDiv.classList.add('review');
+                            
+                            const ratingDiv = document.createElement('div');
+                            ratingDiv.classList.add('rating');
+                            ratingDiv.innerHTML = '★'.repeat(review.average) + '☆'.repeat(5 - review.average);
+                            
+                            const commentDiv = document.createElement('div');
+                            commentDiv.classList.add('comment');
+                            commentDiv.innerText = review.reviewComment;
+
+                            const usernameDiv = document.createElement('div');
+                            usernameDiv.classList.add('username');
+                            usernameDiv.innerText = `Por: ${review.username}`;
+                            
+                            reviewDiv.appendChild(ratingDiv);
+                            reviewDiv.appendChild(usernameDiv);
+                            reviewDiv.appendChild(commentDiv);
+
+                            if (review.photo) {
+                                const photoDiv = document.createElement('div');
+                                photoDiv.classList.add('photo');
+                                const img = document.createElement('img');
+                                img.src = `data:image/jpeg;base64,${review.photo}`;
+                                photoDiv.appendChild(img);
+                                reviewDiv.appendChild(photoDiv);
+                            }
+                            
+                            resultsDiv.appendChild(reviewDiv);
+                        });
+                    },
+                    error: function (data) {
+                        console.log('Errores encontrados:', data);
+                    }
+                });
+            },
+            error: function (data) {
+                console.log('Errores encontrados:', data);
+            }
+        });
     }
 }    
 
@@ -195,6 +357,7 @@ ko.components.register('nav-menu', {
                     '</div>'+
                 '</div> -->'+
                 '<a href="contact.html" class="nav-item nav-link"><span data-bind="text: labels.contact"></span></a>'+
+                '<a href="conmments.html" class="nav-item nav-link"><span data-bind="text: labels.comments"></span></a>'+
             '</div>'
 });
 

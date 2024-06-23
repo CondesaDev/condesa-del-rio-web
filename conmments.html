@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>Condesa Del Rio</title>
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <meta content="Free Website Template" name="keywords">
+    <meta content="Free Website Template" name="description">
+
+    <!-- Favicon -->
+    <link href="img/favicon.ico" rel="icon">
+
+    <!-- Google Font -->
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@200;400&family=Roboto:wght@400;500;700&display=swap" rel="stylesheet"> 
+
+    <!-- Font Awesome -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Libraries Stylesheet -->
+    <link href="lib/owlcarousel/assets/owl.carousel.min.css" rel="stylesheet">
+    <link href="lib/tempusdominus/css/tempusdominus-bootstrap-4.min.css" rel="stylesheet" />
+
+    <!-- Customized Bootstrap Stylesheet -->
+    <link href="css/style.min.css" rel="stylesheet">
+    <link href="css/animation.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css">
+
+    <script src="https://smtpjs.com/v3/smtp.js"></script>  
+    <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@3/dist/email.min.js"></script>  
+    <style>
+        .review-body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #FFFBF2;
+            color: #2c2c2c;
+            margin: 0;
+            padding: 0;
+        }
+        .review-body h1 {
+            font-family: 'Playfair Display', serif;
+            text-align: center;
+            color: #d4af37;
+            margin-top: 20px;
+        }
+        form {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #3c3c3c;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        .star-rating {
+            display: flex;
+            justify-content: center;
+            font-size: 2em;
+            margin-bottom: 20px;
+            direction: ltr;
+        }
+        .star-rating input {
+            display: none;
+        }
+        .star-rating label {
+            color: gray;
+            cursor: pointer;
+        }
+        .star-rating input:checked ~ label,
+        .star-rating label:hover,
+        .star-rating label:hover ~ label {
+            color: #d4af37;
+        }
+        .star-rating input:checked + label {
+            color: #d4af37;
+        }
+        textarea, input[type="text"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+            margin-bottom: 20px;
+            font-size: 1em;
+        }
+        input[type="file"] {
+            display: none;
+        }
+        label[for="photo"] {
+            display: inline-block;
+            background-color: #d4af37;
+            color: #2c2c2c;
+            padding: 10px 20px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        label[for="photo"]:hover {
+            background-color: #b38e2f;
+        }
+        button {
+            width: 100%;
+            padding: 10px;
+            background-color: #d4af37;
+            color: #2c2c2c;
+            border: none;
+            border-radius: 5px;
+            font-size: 1em;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #b38e2f;
+        }
+        #results {
+            max-width: 600px;
+            margin: 20px auto;
+            padding: 20px;
+            background-color: #3c3c3c;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            color: #f4f4f4;
+            max-height: 500px;
+            overflow-y: scroll;
+        }
+        .review {
+            border-bottom: 1px solid #444;
+            padding: 10px 0;
+        }
+        .review:last-child {
+            border-bottom: none;
+        }
+        .review .rating {
+            color: #d4af37;
+            font-size: 1.5em;
+        }
+        .review .comment {
+            font-size: 1em;
+        }
+        .review .photo img {
+            max-width: 100px;
+            max-height: 100px;
+            border-radius: 5px;
+            margin-top: 10px;
+        }
+        @media (max-width: 600px) {
+            form, #results {
+                max-width: 90%;
+                margin: 10px auto;
+            }
+        }
+        #photoPreview {
+            max-width: 100px;
+            max-height: 100px;
+            display: none;
+            margin-top: 10px;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="google_translate_element" style="z-index: 10;position: absolute;"></div>
+
+    <!-- Navbar Start -->
+    <div class="container-fluid p-0 nav-bar">
+        <nav class="navbar navbar-expand-lg bg-none navbar-dark py-3">
+            <a href="index.html" class="navbar-brand px-lg-4 m-0">
+                <h1 class="m-0 display-4 text-uppercase text-white"><span data-bind="text: labels.pageName"></span></h1>
+            </a>
+            <button type="button" class="navbar-toggler" data-toggle="collapse" data-target="#navbarCollapse">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-between" id="navbarCollapse" data-bind="component: 'nav-menu'"></div>
+        </nav>
+    </div>
+    <!-- Navbar End -->
+
+
+    <!-- Page Header Start -->
+    <div class="container-fluid page-header mb-5 position-relative overlay-bottom">
+        <div class="d-flex flex-column align-items-center justify-content-center pt-0 pt-lg-5" style="min-height: 400px">
+            <h1 class="display-4 mb-3 mt-0 mt-lg-5 text-white text-uppercase"><span data-bind="text: labels.comments"></span></h1>
+            <div class="d-inline-flex mb-lg-5">
+                <p class="m-0 text-white"><a class="text-white" href="index.html"><span data-bind="text: labels.home"></span></a></p>
+                <p class="m-0 text-white px-2">/</p>
+                <p class="m-0 text-white"><span data-bind="text: labels.comments"></span></p>
+            </div>
+        </div>
+    </div>
+    <!-- Page Header End -->
+
+    <!-- Contact Start -->
+    <div class="container-fluid pt-5 review-body">
+        <h1>Deja tu Reseña</h1>
+        <form id="reviewForm">
+            <div class="star-rating">
+                <input type="radio" name="rating" id="star5" value="5"><label for="star5">&#9733;</label>
+                <input type="radio" name="rating" id="star4" value="4"><label for="star4">&#9733;</label>
+                <input type="radio" name="rating" id="star3" value="3"><label for="star3">&#9733;</label>
+                <input type="radio" name="rating" id="star2" value="2"><label for="star2">&#9733;</label>
+                <input type="radio" name="rating" id="star1" value="1"><label for="star1">&#9733;</label>
+            </div>
+            <div>
+                <label for="username">Nombre de usuario:</label>
+                <input type="text" id="username" name="username" required>
+            </div>
+            <div>
+                <label for="comment">Comentario:</label>
+                <textarea id="comment" name="comment" rows="4" cols="50" required></textarea>
+            </div>
+            <div>
+                <label for="photo">Subir Foto</label>
+                <input type="file" id="photo" name="photo" accept="image/*">
+                <img id="photoPreview" src="" alt="Previsualización de la foto">
+            </div>
+            <button type="submit"  data-bind="click: insertComment">Enviar Reseña</button>
+        </form>
+        
+        <div id="results">
+            Resultados:
+        </div>
+        
+    </div>
+    <!-- Contact End -->
+
+
+    <!-- Footer Start -->
+    <div class="container-fluid footer text-white mt-5 pt-5 px-0 position-relative overlay-top" data-bind="component: 'footer'"></div>
+    <!-- Footer End -->
+
+
+    <!-- Back to Top -->
+    <a href="#" class="btn btn-lg btn-primary btn-lg-square back-to-top"><i class="fa fa-angle-double-up"></i></a>
+
+
+    <!-- JavaScript Libraries -->
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.bundle.min.js"></script>
+    <script src="lib/easing/easing.min.js"></script>
+    <script src="lib/waypoints/waypoints.min.js"></script>
+    <script src="lib/owlcarousel/owl.carousel.min.js"></script>
+    <script src="lib/tempusdominus/js/moment.min.js"></script>
+    <script src="lib/tempusdominus/js/moment-timezone.min.js"></script>
+    <script src="lib/tempusdominus/js/tempusdominus-bootstrap-4.min.js"></script>
+
+    <!-- Contact Javascript File -->
+    <script src="mail/jqBootstrapValidation.min.js"></script>
+    <script src="mail/contact.js"></script>
+    <script src="lib/knockout/knockout-3.5.1.js"></script>
+
+    <!-- Template Javascript -->
+    <script src="js/main.js"></script>
+    <script type="text/javascript" src="https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit"></script>
+</body>
+
+</html>
