@@ -163,6 +163,7 @@ function AppViewModel(labels) {
 
     function onLoadViewModel () {
         this.setAvtiveMenu();
+        showLoader();
         this.readDocuments();
     }
 
@@ -174,44 +175,47 @@ function AppViewModel(labels) {
         const photoInput = document.getElementById('photo');
         const photoFile = photoInput.files[0];
 
-        let hasError = false;
-
         if (!username) {
             showError('usernameError');
-            hasError = true;
-        } else {
-            hideError('usernameError');
+            return;
         }
     
         if (!comment) {
             showError('commentError');
-            hasError = true;
-        } else {
-            hideError('commentError');
+            return;
         }
     
         if (!rating) {
             showError('ratingError');
-            hasError = true;
-        }else {
-            hideError('ratingError');
-        }
-
-        if (hasError) {
             return;
         }
     
-        let photoBase64 = null;
-        if (photoFile) {
-            const reader = new FileReader();
-            reader.onloadend = () => {
-                photoBase64 = reader.result.split(',')[1];
-                submitReview({  rating: parseInt(rating.value), comment, date, username, photoBase64 });
-            };
-            reader.readAsDataURL(photoFile);
+        if (photoFile) {       
+            if (photoFile) {
+                resizeImage(photoFile, 0.5, function(resizedImageBase64) {
+                    submitReview({ rating: parseInt(rating.value), comment, date, username, photoBase64: resizedImageBase64 });
+                });
+            }
         } else {
             submitReview({ rating: parseInt(rating.value), comment, date, username });
         }
+    }
+
+    function resizeImage(file, scale, callback) {
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.onload = function() {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = img.width * scale;
+                canvas.height = img.height * scale;
+                ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                callback(canvas.toDataURL('image/jpeg').split(',')[1]);
+            };
+            img.src = event.target.result;
+        };
+        reader.readAsDataURL(file);
     }
 
     function showError(elementId) {
@@ -227,6 +231,7 @@ function AppViewModel(labels) {
     }
 
     function submitReview (review) {
+        showLoader(); // Mostrar loader
         $.ajax({
             type: "POST",
             url: `${this.BASE_URL}/insertOne`,
@@ -252,6 +257,7 @@ function AppViewModel(labels) {
                 this.readDocuments();
             },
             error: function (data) {
+                closeLoader();// Ocultar loader
                 alert('Errores encontrados: ' + data);
             }
         });
@@ -361,23 +367,78 @@ function AppViewModel(labels) {
                                 photoDiv.classList.add('photo');
                                 const img = document.createElement('img');
                                 img.src = `data:image/jpeg;base64,${review.photo}`;
+                                img.addEventListener('dblclick', () => openModal(img.src));
                                 photoDiv.appendChild(img);
                                 reviewDiv.appendChild(photoDiv);
                             }
+
+                            const trashIcon = document.createElement('span');
+                            trashIcon.classList.add('trash-icon');
+                            trashIcon.innerHTML = '🗑️';
+                            trashIcon.addEventListener('click', () => deleteReview(review._id));
+                            reviewDiv.appendChild(trashIcon);
         
                             resultsDiv.appendChild(reviewDiv);
 
                         });
+                        closeLoader();// Ocultar loader
                     },
                     error: function (data) {
+                        closeLoader();// Ocultar loader
                         alert('Errores encontrados: ' + data);
                     }
                 });
             },
             error: function (data) {
+                closeLoader();// Ocultar loader
                 alert('Errores encontrados: ' + data);
             }
         });
+    }
+
+
+    function deleteReview(reviewId) {
+        showLoader(); // Mostrar loader
+        console.log('Eliminando: ', { filter: { _id: { $oid: reviewId } } });
+        closeLoader(); // Ocultar loader
+        /* fetch(`${BASE_URL}/databases/${DATABASE}/collections/${COLLECTION}/deleteOne?apiKey=${API_KEY}`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ filter: { _id: { $oid: reviewId } } })
+        })*/
+    }
+
+    function openModal(imageSrc) {
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        modalImage.src = imageSrc;
+        modal.style.display = 'flex';
+    }
+    
+    document.querySelector('.close-modal')?.addEventListener('click', () => {
+        document.getElementById('imageModal').style.display = 'none';
+    });
+
+    document.getElementById('imageModal')?.addEventListener('click', (event) => {
+        if (event.target === event.currentTarget) {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+    });
+
+    function closeLoader () {
+        const loader = document.getElementById('loader');
+        if (loader) {
+            loader.style.display = 'none';
+        }
+    }
+
+    function showLoader () {
+        const loader = document.getElementById('loader');
+        if (loader) {
+            loader.style.display = 'flex';
+        }
     }
 }    
 
