@@ -1,4 +1,3 @@
-const LOGIN_URL = process.env.LOGIN_URL;
 (function ($) {
     'use strict';
 
