@@ -150,13 +150,13 @@ function AppViewModel(labels) {
     this.hideError = hideError;
     this.photoChanged = photoChanged;
     this.token;
-    this.LOGIN_URL = LOGIN_URL;//'https://ap-southeast-1.aws.services.cloud.mongodb.com/api/client/v2.0/app/data-agbvuip/auth/providers/local-userpass/login';
-    this.BASE_URL = 'https://ap-southeast-1.aws.data.mongodb-api.com/app/data-agbvuip/endpoint/data/v1/action';
-    this.DATABASE = 'development';
-    this.COLLECTION = 'reviews';
-    this.DATASOURSE = 'condesa-dev';
-    this.USER = 'rulorules99';
-    this.PASS = 'cloud192';
+    this.LOGIN_URL = LOGIN_URL;
+    this.BASE_URL = BASE_URL;
+    this.DATABASE = DATABASE;
+    this.COLLECTION = COLLECTION;
+    this.DATASOURSE = DATASOURSE;
+    this.USER = USER;
+    this.PASS = PASS;
 
     this.onLoadViewModel();
 
