@@ -150,8 +150,7 @@ function AppViewModel(labels) {
     this.hideError = hideError;
     this.photoChanged = photoChanged;
     this.token;
-    this.API_KEY = 'aGRN1NCy3khZzURqfzrlCTmTsIfCt83VyZutV8nNGANiE0Mg5Xkzf3qVPCppTwns';
-    this.LOGIN_URL = 'https://ap-southeast-1.aws.services.cloud.mongodb.com/api/client/v2.0/app/data-agbvuip/auth/providers/local-userpass/login';
+    this.LOGIN_URL = process.env.LOGIN_URL;//'https://ap-southeast-1.aws.services.cloud.mongodb.com/api/client/v2.0/app/data-agbvuip/auth/providers/local-userpass/login';
     this.BASE_URL = 'https://ap-southeast-1.aws.data.mongodb-api.com/app/data-agbvuip/endpoint/data/v1/action';
     this.DATABASE = 'development';
     this.COLLECTION = 'reviews';
