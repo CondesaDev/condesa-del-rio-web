@@ -137,41 +137,190 @@ class Labels {
         this.service = 'Servicio';
         this.menu = 'Productos';
         this.contact = 'Contacto';
-        this.comments = 'Comentarios';
+        this.comments = 'Reseñas';
     }
 }
 
-function AppViewModel(labels) {
+class ReviewService {
+    LOGIN_URL = LOGIN_URL;
+    BASE_URL = BASE_URL;
+    DATABASE = DATABASE;
+    COLLECTION = COLLECTION;
+    DATASOURSE = DATASOURSE;
+    USER = USER;
+    PASS = PASS;
+    reviews = ko.observableArray()
+
+    closeLoader = () => {
+        const loader = document.getElementById('loader');
+        if (loader) {
+            loader.style.display = 'none';
+        }
+    }
+    onError = (data) => {
+        this.closeLoader();// Ocultar loader
+        alert('Errores encontrados: ' + data);
+    }
+    isTokenExpired = (token) => {
+        const expiry = (JSON.parse(atob(token.split('.')[1]))).exp;
+        return (Math.floor((new Date()).getTime() / 1000)) >= expiry;
+    }
+    initReviews = () => {
+        let token = sessionStorage.getItem('TK');
+        if (!token) {
+            this.logIn();
+        } else {
+            let isTokenExpired = this.isTokenExpired(token);
+            if (isTokenExpired) {
+                this.logIn();
+            } else {
+                this.getReviews();
+            }
+        }
+    }
+    logIn = () => {
+        $.ajax({
+            type: 'POST',
+            url: this.LOGIN_URL,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            data: JSON.stringify({
+                'username': this.USER,
+                'password': this.PASS
+            }),
+            success: (data) => {
+                sessionStorage.setItem('TK', data.access_token);
+                this.getReviews();
+            },
+            error: this.onError
+        });
+    }
+    getReviews = () => {
+        $.ajax({
+            type: 'POST',
+            url: `${this.BASE_URL}/find`,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${sessionStorage.getItem('TK')}`
+            },
+            data: JSON.stringify({
+                'collection': this.COLLECTION,
+                'database': this.DATABASE,
+                'dataSource': this.DATASOURSE
+            }),
+            success: (data) => {
+                console.log('Documentos encontrados:', data);
+                let reviews = data.documents.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+                reviews = reviews.map( (review) => {
+                    review.averageText = '★'.repeat(review.average) + '☆'.repeat(5 - review.average);
+                    review.created = new Date(review.createdAt).toLocaleString();
+                    if (review.photo) {
+                        review.imgSrc = `data:image/jpeg;base64,${review.photo}`;
+                    } else {
+                        review.photo = false;
+                    }
+                    return review;
+                });
+                this.reviews(reviews); 
+                this.closeLoader();
+            },
+            error: this.onError
+        });
+    }
+    submitReview (review) {
+        this.showLoader();
+        $.ajax({
+            type: 'POST',
+            url: `${this.BASE_URL}/insertOne`,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${sessionStorage.getItem('TK')}`
+            },
+            data: JSON.stringify(
+            {
+                'collection': this.COLLECTION,
+                'database': this.DATABASE,
+                'dataSource': this.DATASOURSE,
+                'document': {
+                    average: review.rating,
+                    reviewComment: review.comment,
+                    photo: review.photoBase64,
+                    username: review.username,
+                    createdAt: { '$date': review.date }
+                }
+            }),
+            success: (data) => {
+                console.log('Documentos insertados:', data);
+                this.initReviews();
+            },
+            error: this.onError
+        });
+    }
+    deleteReview = (reviewId) => {
+        this.showLoader(); 
+        $.ajax({
+            type: 'POST',
+            url: `${this.BASE_URL}/deleteOne`,
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${sessionStorage.getItem('TK')}`
+            },
+            data: JSON.stringify(
+            {
+                'collection': this.COLLECTION,
+                'database': this.DATABASE,
+                'dataSource': this.DATASOURSE,
+                filter: { _id: { $oid: reviewId } }
+            }),
+            success: () => {    
+                this.initReviews();
+            },
+            error: this.onError
+        });
+    }
+    openModal = (imageSrc) => {
+        const modal = document.getElementById('imageModal');
+        const modalImage = document.getElementById('modalImage');
+        modalImage.src = imageSrc;
+        modal.style.display = 'flex';
+    }
+    showLoader = () => {
+        const loader = document.getElementById('loader');
+        if (loader) {
+            loader.style.display = 'flex';
+        }
+    }
+}
+
+function AppViewModel(labels, service) {
     this.labels = labels;
+    this.service = service;
     this.setAvtiveMenu = setAvtiveMenu;
     this.onLoadViewModel = onLoadViewModel;
-    this.readDocuments = readDocuments;
     this.insertComment = insertComment;
     this.hideError = hideError;
     this.photoChanged = photoChanged;
-    this.token;
-    this.LOGIN_URL = LOGIN_URL;
-    this.BASE_URL = BASE_URL;
-    this.DATABASE = DATABASE;
-    this.COLLECTION = COLLECTION;
-    this.DATASOURSE = DATASOURSE;
-    this.USER = USER;
-    this.PASS = PASS;
+    this.closeModal = closeModal;
+    this.form = {
+        username: ko.observable(''),
+        comment: ko.observable(''),
+        photo: () => document.getElementById('photo')
+    };
 
     this.onLoadViewModel();
 
     function onLoadViewModel () {
         this.setAvtiveMenu();
-        showLoader();
-        this.readDocuments();
+        this.service.showLoader();
+        this.service.initReviews();
     }
 
     function insertComment () {
-        const username = document.getElementById('username').value;
+        const username = this.form.username();
+        const comment = this.form.comment();
+        const photoInput = this.form.photo();
         const rating = document.querySelector('input[name="rating"]:checked');
-        const comment = document.getElementById('comment').value;
-        const date = new Date().toISOString();
-        const photoInput = document.getElementById('photo');
         const photoFile = photoInput.files[0];
 
         if (!username) {
@@ -189,14 +338,14 @@ function AppViewModel(labels) {
             return;
         }
     
-        if (photoFile) {       
-            if (photoFile) {
-                resizeImage(photoFile, 0.5, function(resizedImageBase64) {
-                    submitReview({ rating: parseInt(rating.value), comment, date, username, photoBase64: resizedImageBase64 });
-                });
-            }
+        const date = new Date().toISOString();
+
+        if (photoFile) {
+            resizeImage(photoFile, 0.5, function(resizedImageBase64) {
+                this.service.submitReview({ rating: parseInt(rating.value), comment, date, username, photoBase64: resizedImageBase64 });
+            });
         } else {
-            submitReview({ rating: parseInt(rating.value), comment, date, username });
+            this.service.submitReview({ rating: parseInt(rating.value), comment, date, username });
         }
     }
 
@@ -229,39 +378,6 @@ function AppViewModel(labels) {
         document.getElementById(elementId).style.display = 'none';
     }
 
-    function submitReview (review) {
-        showLoader(); // Mostrar loader
-        $.ajax({
-            type: "POST",
-            url: `${this.BASE_URL}/insertOne`,
-            headers: {
-                'Content-Type': 'application/json',
-                "Authorization": `Bearer ${this.token}`
-            },
-            data: JSON.stringify(
-            {
-                "collection": this.COLLECTION,
-                "database": this.DATABASE,
-                "dataSource": this.DATASOURSE,
-                "document": {
-                    average: review.rating,
-                    reviewComment: review.comment,
-                    photo: review.photoBase64,
-                    username: review.username,
-                    createdAt: { "$date": review.date }
-                }
-            }),
-            success: (data) => {    
-                console.log('Documentos insertados:', data);
-                this.readDocuments();
-            },
-            error: function (data) {
-                closeLoader();// Ocultar loader
-                alert('Errores encontrados: ' + data);
-            }
-        });
-    }
-
     function setAvtiveMenu () {
         $(document).ready(function () {
             var location = window.location.toString().split('/').at(-1);
@@ -274,7 +390,7 @@ function AppViewModel(labels) {
             
             aElemets.removeClass('active');
 
-            var currentTab = navElemet.find($(`a[href="${location}"]`));
+            var currentTab = navElemet.find($(`a[href='${location}']`));
 
             currentTab.addClass('active');
         });
@@ -298,145 +414,9 @@ function AppViewModel(labels) {
         }
     }
 
-    function readDocuments() {
-        $.ajax({
-            type: "POST",
-            url: this.LOGIN_URL,
-            headers: {
-                "Content-Type": "application/json"
-            },
-            data: JSON.stringify({
-                "username": this.USER,
-                "password": this.PASS
-            }),
-            success: (data) => {
-
-                console.log('access_token:', data);
-                this.token = data.access_token;
-                $.ajax({
-                    type: "POST",
-                    url: `${this.BASE_URL}/find`,
-                    headers: {
-                        'Content-Type': 'application/json',
-                        "Authorization": `Bearer ${this.token}`
-                    },
-                    data: JSON.stringify({
-                        "collection": this.COLLECTION,
-                        "database": this.DATABASE,
-                        "dataSource": this.DATASOURSE
-                    }),
-                    success: function (data) {
-                        console.log('Documentos encontrados:', data);
-                        const reviews = data.documents.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
-                        const resultsDiv = document.getElementById('results');
-                        resultsDiv.innerHTML = ''; // Limpiar resultados previos
-                        
-                        reviews.forEach(review => {
-                            const reviewDiv = document.createElement('div');
-                            reviewDiv.classList.add('review');
-                            
-                            const infoDiv = document.createElement('div');
-                            infoDiv.classList.add('info');
-                            
-                            const dateDiv = document.createElement('div');
-                            dateDiv.classList.add('date');
-                            dateDiv.innerText = new Date(review.createdAt).toLocaleString();
-                            
-                            const ratingDiv = document.createElement('div');
-                            ratingDiv.classList.add('rating');
-                            ratingDiv.innerHTML = '★'.repeat(review.average) + '☆'.repeat(5 - review.average);
-                            
-                            infoDiv.appendChild(dateDiv);
-                            infoDiv.appendChild(ratingDiv);
-                            
-                            const commentDiv = document.createElement('div');
-                            commentDiv.classList.add('comment');
-                            commentDiv.innerText = review.reviewComment;
-                            
-                            const usernameDiv = document.createElement('div');
-                            usernameDiv.classList.add('username');
-                            usernameDiv.innerText = `Por: ${review.username}`;
-                            
-                            reviewDiv.appendChild(infoDiv);
-                            reviewDiv.appendChild(usernameDiv);
-                            reviewDiv.appendChild(commentDiv);
-
-                            if (review.photo) {
-                                const photoDiv = document.createElement('div');
-                                photoDiv.classList.add('photo');
-                                const img = document.createElement('img');
-                                img.src = `data:image/jpeg;base64,${review.photo}`;
-                                img.addEventListener('dblclick', () => openModal(img.src));
-                                photoDiv.appendChild(img);
-                                reviewDiv.appendChild(photoDiv);
-                            }
-
-                            const trashIcon = document.createElement('span');
-                            trashIcon.classList.add('trash-icon');
-                            trashIcon.innerHTML = '🗑️';
-                            trashIcon.addEventListener('click', () => deleteReview(review._id));
-                            reviewDiv.appendChild(trashIcon);
-        
-                            resultsDiv.appendChild(reviewDiv);
-
-                        });
-                        closeLoader();// Ocultar loader
-                    },
-                    error: function (data) {
-                        closeLoader();// Ocultar loader
-                        alert('Errores encontrados: ' + data);
-                    }
-                });
-            },
-            error: function (data) {
-                closeLoader();// Ocultar loader
-                alert('Errores encontrados: ' + data);
-            }
-        });
-    }
-
-
-    function deleteReview(reviewId) {
-        showLoader(); // Mostrar loader
-        console.log('Eliminando: ', { filter: { _id: { $oid: reviewId } } });
-        closeLoader(); // Ocultar loader
-        /* fetch(`${BASE_URL}/databases/${DATABASE}/collections/${COLLECTION}/deleteOne?apiKey=${API_KEY}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({ filter: { _id: { $oid: reviewId } } })
-        })*/
-    }
-
-    function openModal(imageSrc) {
-        const modal = document.getElementById('imageModal');
-        const modalImage = document.getElementById('modalImage');
-        modalImage.src = imageSrc;
-        modal.style.display = 'flex';
-    }
-    
-    document.querySelector('.close-modal')?.addEventListener('click', () => {
-        document.getElementById('imageModal').style.display = 'none';
-    });
-
-    document.getElementById('imageModal')?.addEventListener('click', (event) => {
-        if (event.target === event.currentTarget) {
+    function closeModal (data, e) {
+        if (e.target === e.currentTarget) {
             document.getElementById('imageModal').style.display = 'none';
-        }
-    });
-
-    function closeLoader () {
-        const loader = document.getElementById('loader');
-        if (loader) {
-            loader.style.display = 'none';
-        }
-    }
-
-    function showLoader () {
-        const loader = document.getElementById('loader');
-        if (loader) {
-            loader.style.display = 'flex';
         }
     }
 }    
@@ -446,7 +426,7 @@ function AppViewModel(labels) {
 //     template: require('fs').readFileSync(__dirname + '/templates/nav-menu.html', 'utf8')
 // });
 var userLang = navigator.language || navigator.userLanguage; 
-var model = AppViewModel(new Labels(userLang));
+var model = AppViewModel(new Labels(userLang), new ReviewService());
 
 ko.components.register('nav-menu', {
     viewModel: model,

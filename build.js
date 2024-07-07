@@ -9,16 +9,14 @@ if (fs.existsSync(path)) {
 
 // Crear el contenido de las variables de entorno
 const envVariables = `
-const ENV = "${process.env}"
-const LOGIN_URL = "${process.env.LOGIN_URL}";//'https://ap-southeast-1.aws.services.cloud.mongodb.com/api/client/v2.0/app/data-agbvuip/auth/providers/local-userpass/login';
-const BASE_URL = "${process.env.BASE_URL}";//'https://ap-southeast-1.aws.data.mongodb-api.com/app/data-agbvuip/endpoint/data/v1/action';
-const DATABASE = "${process.env.DATABASE}";//'development';
-const COLLECTION = "${process.env.COLLECTION}";//'reviews';
-const DATASOURSE = "${process.env.DATASOURSE}";//'condesa-dev';
-const USER = "${process.env.USER}";//'rulorules99';
-const PASS = "${process.env.PASS}";//'cloud192';
+const LOGIN_URL = "${process.env.LOGIN_URL}";
+const BASE_URL = "${process.env.BASE_URL}";
+const DATABASE = "${process.env.DATABASE}";
+const COLLECTION = "${process.env.COLLECTION}";
+const DATASOURSE = "${process.env.DATASOURSE}";
+const USER = "${process.env.USER}";
+const PASS = "${process.env.PASS}";
 
-console.log("ENV:", ENV);
 console.log("LOGIN_URL:", LOGIN_URL);
 console.log("BASE_URL:", BASE_URL);
 console.log("DATABASE:", DATABASE);

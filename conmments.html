@@ -33,7 +33,7 @@
         .review-body {
             font-family: 'Roboto', sans-serif;
             background-color: #FFFBF2;
-            color: #2c2c2c;
+            color: #FFFBF2;
             margin: 0;
             padding: 0;
         }
@@ -104,7 +104,7 @@
         label[for="photo"]:hover {
             background-color: #b38e2f;
         }
-        button {
+        .submit-btn {
             width: 100%;
             padding: 10px;
             background-color: #d4af37;
@@ -115,7 +115,7 @@
             cursor: pointer;
             transition: background-color 0.3s;
         }
-        button:hover {
+        .submit-btn:hover {
             background-color: #b38e2f;
         }
         .error {
@@ -355,7 +355,7 @@
             </div>
             <div>
                 <label for="username">Nombre de usuario:</label>
-                <input type="text" id="username" name="username" required>
+                <input type="text" id="username" name="username" data-bind="textInput: form.username" required>
                 <div id="usernameError" class="error" style="display:none;">
                     Nombre de usuario es requerido
                     <span class="close" data-bind="click: hideError('usernameError')">&times;</span>
@@ -363,7 +363,7 @@
             </div>
             <div>
                 <label for="comment">Comentario:</label>
-                <textarea id="comment" name="comment" rows="4" cols="50" required></textarea>
+                <textarea id="comment" name="comment" data-bind="textInput: form.comment" rows="4" cols="50" required></textarea>
                 <div id="commentError" class="error" style="display:none;">
                     Comentario es requerido
                     <span class="close" data-bind="click: hideError('commentError')">&times;</span>
@@ -371,18 +371,31 @@
             </div>
             <div class="photo-upload">
                 <label for="photo">Subir Foto</label>
-                <input type="file" id="photo" name="photo" accept="image/*" data-bind="event:{ change: photoChanged}">
+                <input type="file" id="photo" name="photo" accept="image/*" data-bind="event: { change: photoChanged }">
                 <img id="photoPreview" src="" alt="Previsualización de la foto">
             </div>
-            <button type="submit" data-bind="click: insertComment">Enviar Reseña</button>
+            <button class="submit-btn" type="submit" data-bind="click: insertComment">Enviar Reseña</button>
         </form>
         
-        <div id="results"> Cargando ....</div>
+        <div id="results" data-bind="foreach: service.reviews">
+            <div class="review">
+                <div class="info">
+                    <div class="date" data-bind="text: created"></div>
+                    <div class="rating" data-bind="text: averageText"></div>
+                </div>
+                <div class="username">Por: <span data-bind="text: username"></span></div>
+                <div class="comment" data-bind="text: reviewComment">2222</div>
+                <div class="photo" data-bind="if: photo">
+                    <img data-bind="attr: { src: imgSrc }, click: service.openModal.bind(1, imgSrc)">
+                </div>
+                <span class="trash-icon" data-bind="click: service.deleteReview.bind(1, _id)">🗑️</span>
+            </div>
+        </div>
 
         <!-- Modal para previsualización de la imagen -->
-        <div id="imageModal" class="modal">
+        <div id="imageModal" class="modal" data-bind="click: closeModal">
             <div class="modal-content">
-                <span class="close-modal">&times;</span>
+                <span class="close-modal" data-bind="click: closeModal">&times;</span>
                 <img id="modalImage" src="" alt="Imagen ampliada">
             </div>
         </div>
