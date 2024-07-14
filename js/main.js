@@ -584,4 +584,64 @@ ko.components.register('menu', {
     '</div>'
 });
 
+/* // Registrar el componente
+ko.components.register('mi-componente', {
+    viewModel: function(params) {
+        this.title = ko.observable(params.title || "Título predeterminado");
+        this.description = ko.observable(params.description || "Descripción predeterminada");
+    },
+    template: { fromUrl: '../mi-template.html' } // Especifica la ruta del archivo de template
+});
+    <mi-componente params="title: 'Mi Título', description: 'Mi descripción'"></mi-componente>
+ */
+
+ko.components.register('over-age', {
+    viewModel: function(params) {
+        this.showDialog = ko.observable(true);
+        
+        let isOverAge = sessionStorage.getItem('isOverAge');
+        
+        this.confirmYes = () => {
+            this.showDialog(false);
+            sessionStorage.setItem('isOverAge', true);
+        };
+
+        this.confirmNo = () => {
+            this.showDialog(false);
+            document.body.style.overflow = 'hidden';
+            document.body.innerHTML += '<div class="page-blocker"></div>';
+            sessionStorage.setItem('isOverAge', false);
+        };
+
+        if (isOverAge) {
+            if( isOverAge === 'false') {
+                this.confirmNo();
+                document.getElementById('overAge').style.display = 'none';
+            } else {
+                this.confirmYes();
+            }
+        } 
+    },
+    template: { fromUrl: '../templates/over-age.html' } 
+});
+
+(function() {
+    function loadTemplate(name, templateConfig, callback) {
+        if (templateConfig.fromUrl) {
+            // Utilizar jQuery para cargar el archivo de template
+            $.get(templateConfig.fromUrl, function(markupString) {
+                ko.components.defaultLoader.loadTemplate(name, markupString, callback);
+            });
+        } else {
+            // Utilizar el cargador por defecto de Knockout
+            callback(null);
+        }
+    }
+
+    // Agregar el nuevo loader a Knockout
+    ko.components.loaders.unshift({
+        loadTemplate: loadTemplate
+    });
+})();
+
 ko.applyBindings();
