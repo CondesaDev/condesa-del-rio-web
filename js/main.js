@@ -210,7 +210,6 @@ class ReviewService {
                 'dataSource': this.DATASOURSE
             }),
             success: (data) => {
-                console.log('Documentos encontrados:', data);
                 let reviews = data.documents.sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
                 reviews = reviews.map( (review) => {
                     review.averageText = '★'.repeat(review.average) + '☆'.repeat(5 - review.average);
@@ -228,7 +227,7 @@ class ReviewService {
             error: this.onError
         });
     }
-    submitReview (review) {
+    submitReview (review , resetValsCallback) {
         this.showLoader();
         $.ajax({
             type: 'POST',
@@ -251,7 +250,15 @@ class ReviewService {
                 }
             }),
             success: (data) => {
-                console.log('Documentos insertados:', data);
+                let ids =  JSON.parse(sessionStorage.getItem('RID'));
+                if (!ids) {
+                    sessionStorage.setItem('RID', JSON.stringify([data.insertedId]));
+                } else {
+                    ids.push(data.insertedId);
+                    sessionStorage.setItem('RID', JSON.stringify(ids));
+                }
+
+                resetValsCallback();
                 this.initReviews();
             },
             error: this.onError
@@ -302,6 +309,7 @@ function AppViewModel(labels, service) {
     this.hideError = hideError;
     this.photoChanged = photoChanged;
     this.closeModal = closeModal;
+    this.canDelete = canDelete;
     this.form = {
         username: ko.observable(''),
         comment: ko.observable(''),
@@ -314,6 +322,16 @@ function AppViewModel(labels, service) {
         this.setAvtiveMenu();
         this.service.showLoader();
         this.service.initReviews();
+    }
+
+    function resetFields () {
+        this.form.username('');
+        this.form.comment('');
+        this.form.photo().value = null;
+        
+        const photoPreview = document.getElementById('photoPreview');
+        photoPreview.src = '';
+        photoPreview.style.display = 'none';
     }
 
     function insertComment () {
@@ -342,10 +360,10 @@ function AppViewModel(labels, service) {
 
         if (photoFile) {
             resizeImage(photoFile, 0.5, function(resizedImageBase64) {
-                this.service.submitReview({ rating: parseInt(rating.value), comment, date, username, photoBase64: resizedImageBase64 });
+                this.service.submitReview({ rating: parseInt(rating.value), comment, date, username, photoBase64: resizedImageBase64 }, resetFields);
             });
         } else {
-            this.service.submitReview({ rating: parseInt(rating.value), comment, date, username });
+            this.service.submitReview({ rating: parseInt(rating.value), comment, date, username }, resetFields);
         }
     }
 
@@ -419,12 +437,14 @@ function AppViewModel(labels, service) {
             document.getElementById('imageModal').style.display = 'none';
         }
     }
+
+    function canDelete (reviewId) {
+        let ids =  JSON.parse(sessionStorage.getItem('RID'));
+
+        return ids.includes(reviewId);
+    }
 }    
 
-// ko.components.register('nav-menu', {
-//     viewModel: AppViewModel(new Labels()),
-//     template: require('fs').readFileSync(__dirname + '/templates/nav-menu.html', 'utf8')
-// });
 var userLang = navigator.language || navigator.userLanguage; 
 var model = AppViewModel(new Labels(userLang), new ReviewService());
 
@@ -614,10 +634,7 @@ ko.components.register('over-age', {
         };
 
         if (isOverAge) {
-            if( isOverAge === 'false') {
-                this.confirmNo();
-                document.getElementById('overAge').style.display = 'none';
-            } else {
+            if( isOverAge === 'true') {
                 this.confirmYes();
             }
         } 
