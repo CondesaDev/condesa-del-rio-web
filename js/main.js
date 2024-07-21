@@ -441,6 +441,10 @@ function AppViewModel(labels, service) {
     function canDelete (reviewId) {
         let ids =  JSON.parse(sessionStorage.getItem('RID'));
 
+        if (!ids) {
+            return false;
+        }
+
         return ids.includes(reviewId);
     }
 }    
