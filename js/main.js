@@ -479,7 +479,7 @@ ko.components.register('footer', {
             '<div class="col-lg-4 col-md-6 mb-5">'+
                 '<h4 class="text-white text-uppercase mb-4" style="letter-spacing: 3px;">Contacto</h4>'+
                 '<p><i class="fa fa-map-marker-alt mr-2"></i><span data-bind="text: labels.address"></span></p>'+
-                '<p><i class="fa fa-phone-alt mr-2"></i><a href="tel:333-417-5555"><span data-bind="text: labels.phone"></span></a></p>'+
+                '<p><i class="fa-brands fa-whatsapp mr-2"></i><a href="https://wa.me/5213311363783/?text=Hola Condesa, me interesaria comprar: " target="_blank""><span data-bind="text: labels.phone"></span></a></p>'+
                 '<p class="m-0"><i class="fa fa-envelope mr-2"></i><span data-bind="text: labels.email"></span></p>'+
             '</div>'+
             '<div class="col-lg-4 col-md-6 mb-5">'+
