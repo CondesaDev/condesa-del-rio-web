@@ -132,7 +132,7 @@ class Labels {
 
         this.sendMessageBtn = 'Enviar Mensaje';
 
-        this.home = 'Paguina Principal';
+        this.home = 'Página principal';
         this.about = 'Acerca de nosotros';
         this.service = 'Servicio';
         this.menu = 'Productos';
