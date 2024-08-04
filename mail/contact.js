@@ -54,7 +54,6 @@ $(function () {
                 }
             };
             var success = (message) => {
-                console.log(message);
                 ajaxObj.success();
                 ajaxObj.complete();
             };
