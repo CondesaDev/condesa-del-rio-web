@@ -484,7 +484,7 @@ ko.components.register('footer', {
             '</div>'+
             '<div class="col-lg-4 col-md-6 mb-5">'+
                 '<h4 class="text-white text-uppercase mb-4" style="letter-spacing: 3px;">Síguenos</h4>'+
-                '<p>Ahora nos puedes seguir en las sigueinetes redes sociales</p>'+
+                '<p>Ahora nos puedes seguir en las siguientes redes sociales</p>'+
                 '<div class="d-flex justify-content-start">'+
                     '<a class="btn btn-lg btn-outline-light btn-lg-square mr-2" target="_blank" href="https://www.facebook.com/Condesa-del-rio-110107168450655"><i class="fab fa-facebook-f"></i></a>'+
                     '<a class="btn btn-lg btn-outline-light btn-lg-square mr-2" target="_blank" href="#"><i class="fab fa-instagram"></i></a>'+
